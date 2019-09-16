@@ -1,0 +1,52 @@
+cargo-features = ["edition2021"]
+
+[package]
+name = "tools"
+version = "0.1.0"
+authors = ["r7a"]
+edition = "2021"
+description = "tools"
+license = "MIT"
+
+[dev-dependencies]
+speculate = "*"
+mockito = "*"
+hamcrest = "*"
+quickcheck = "*"
+quickcheck_macros = "*"
+
+[dependencies]
+## common
+anyhow = "*"
+clap = "~3.0.0-beta.5"
+directories = "*"
+duct = "*"
+env_logger = "*"
+lazy_static = "*"
+log = '*'
+regex = "*"
+lazy-regex = "*"
+fstrings = "*"
+
+## displayctl
+# regex = "*"
+xcb = "*"
+
+## volumectl.rs
+# regex = "*"
+# pipewire = "*"
+
+## i3ctl
+i3ipc = "*"
+json = "*"
+
+[package.metadata.rpm]
+package = "tools"
+
+[package.metadata.rpm.cargo]
+buildflags = ["--release"]
+
+[package.metadata.rpm.targets]
+volumectl = { path = "/usr/bin/volumectl" }
+displayctl = { path = "/usr/bin/displayctl" }
+i3ctl = { path = "/usr/bin/i3ctl" }
