@@ -33,10 +33,10 @@ jobs:
       - name: Enable rust cargo cache
         uses: actions/cache@v2
         with:
-        path: |
-          /opt/rust/registry
-          target
-        key: cargo-${{ hashFiles('**/Cargo.lock') }}
+          path: |
+            /opt/rust/registry
+            target
+          key: cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Build and Test
         uses: ./.github/actions/cargo
