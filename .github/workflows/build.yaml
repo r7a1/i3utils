@@ -11,7 +11,7 @@ jobs:
 
       - name: Enable docker cache
         id: docker-cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: /tmp/docker-save
           key: docker-save-${{ hashFiles('./.github/actions/cargo/Dockerfile') }}
@@ -26,14 +26,24 @@ jobs:
           args: -h
 
       - name: Save docker cache
-        run: docker save $(docker images -q) --output /tmp/docker-save/docker-save-${{ hashFiles('./.github/actions/cargo/Dockerfile') }}.tar
+        run: |
+          mkdir -p /tmp/docker-save
+          docker save $(docker images -q) --output /tmp/docker-save/docker-save-${{ hashFiles('./.github/actions/cargo/Dockerfile') }}.tar
+
+      - name: Enable rust cargo cache
+        uses: actions/cache@v2
+        with:
+        path: |
+          /opt/rust/registry
+          target
+        key: cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Build and Test
         uses: ./.github/actions/cargo
         with:
           args: test
 
-      - name: Make RPM Package
+      - name: Build RPM Package
         uses: ./.github/actions/cargo
         with:
           args: rpm build
