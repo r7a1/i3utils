@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::Parser;
 
-use tools::sys;
+use i3utils::sys;
 
 #[derive(Parser)]
 struct Opts {

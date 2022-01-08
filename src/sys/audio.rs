@@ -3,10 +3,7 @@ use lazy_regex::regex;
 use log::{debug, info};
 
 #[derive(Debug)]
-struct Sink {
-    index: u16,
-    name: String,
-}
+struct Sink(u16, String);
 
 pub fn volume_up(inc: Option<i8>) -> Result<()> {
     volume(inc.unwrap_or(5))
@@ -42,10 +39,10 @@ fn list_sinks() -> Result<Vec<Sink>> {
             regex!(r"^(?P<index>[0-9]+)\s+(?P<name>.+)\s+PipeWire\s+.*").captures(line)
         })
         .map(|cap| {
-            Ok(Sink {
-                index: cap["index"].parse::<u16>()?.to_owned(),
-                name: cap["name"].to_string(),
-            })
+            Ok(Sink(
+                cap["index"].parse::<u16>()?.to_owned(),
+                cap["name"].to_string(),
+            ))
         })
         .collect::<Result<Vec<Sink>>>()
 }
@@ -74,14 +71,14 @@ fn switch_next(sinks: Vec<Sink>, current: &str, inputs: Vec<u16>) -> Result<()> 
     if let Some((idx, _)) = sinks
         .iter()
         .enumerate()
-        .find(|(_, sink)| sink.name == current)
+        .find(|(_, sink)| sink.1 == current)
     {
-        let next = &sinks[(idx + 1) % sinks.len()];
-        info!("switch to sink: {:?}", &next);
+        let Sink(id, next) = &sinks[(idx + 1) % sinks.len()];
+        info!("switch to sink: {}: {}", id, next);
 
-        duct::cmd!("pactl", "set-default-sink", &next.name).run()?;
+        duct::cmd!("pactl", "set-default-sink", next).run()?;
         for input in &inputs {
-            duct::cmd!("pactl", "move-sink-input", &input.to_string(), &next.name).run()?;
+            duct::cmd!("pactl", "move-sink-input", &input.to_string(), next).run()?;
         }
     }
     Ok(())

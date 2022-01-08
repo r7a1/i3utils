@@ -1,4 +1,5 @@
 use anyhow::Result;
+use directories::ProjectDirs;
 use lazy_static::lazy_static;
 use log::info;
 use std::fs::File;
@@ -15,7 +16,7 @@ use crate::sys::xwindow;
 mod core;
 
 lazy_static! {
-    static ref CACHE_DIR: String = directories::ProjectDirs::from("com", "example", "i3ctl")
+    static ref CACHE_DIR: String = ProjectDirs::from("", "", "i3ctl")
         .unwrap()
         .cache_dir()
         .to_str()

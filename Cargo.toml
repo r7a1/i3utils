@@ -1,8 +1,6 @@
-cargo-features = ["edition2021"]
-
 [package]
-name = "tools"
-version = "0.1.0"
+name = "i3utils"
+version = "1.0.0"
 authors = ["r7a"]
 edition = "2021"
 description = "tools"
@@ -18,7 +16,7 @@ quickcheck_macros = "*"
 [dependencies]
 ## common
 anyhow = "*"
-clap = "~3.0.0-beta.5"
+clap = { version = "*", features = ["derive"] }
 directories = "*"
 duct = "*"
 env_logger = "*"
@@ -27,21 +25,16 @@ log = '*'
 regex = "*"
 lazy-regex = "*"
 fstrings = "*"
-
 ## displayctl
-# regex = "*"
 xcb = "*"
-
 ## volumectl.rs
-# regex = "*"
-# pipewire = "*"
-
+#pipewire = "*"
 ## i3ctl
 i3ipc = "*"
 json = "*"
 
 [package.metadata.rpm]
-package = "tools"
+package = "i3utils"
 
 [package.metadata.rpm.cargo]
 buildflags = ["--release"]
