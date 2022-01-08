@@ -42,4 +42,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: i3utils.rpm
-          path: target/release/rpmbuild/RPMs/x86_64/*.rpm
+          path: target/release/rpmbuild/RPMS/x86_64/*.rpm
