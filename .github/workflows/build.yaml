@@ -2,6 +2,9 @@
 name: Build
 on:
   workflow_dispatch:
+env:
+  DOCKER_CACHE_DIR: /tmp/docker-cache
+  DOCKER_CACHE_FILE: snapshot.tar
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -13,12 +16,12 @@ jobs:
         id: docker-cache
         uses: actions/cache@v2
         with:
-          path: /tmp/docker-save
-          key: docker-save-${{ hashFiles('./.github/actions/cargo/Dockerfile') }}
+          path: ${{ env.DOCKER_CACHE_DIR }}
+          key: ${{ hashFiles('./.github/actions/cargo/Dockerfile') }}
 
       - name: Load docker cache if it exists
-        run: docker load -i /tmp/docker-save/snapshot.tar || true
         if: steps.docker-cache.outputs.cache-hit == 'true'
+        run: docker load -i ${{ env.DOCKER_CACHE_DIR }}/${{ env.DOCKER_CACHE_FILE }} || true
 
       - name: Build docker file
         uses: ./.github/actions/cargo
@@ -28,7 +31,7 @@ jobs:
       - name: Save docker cache
         run: |
           mkdir -p /tmp/docker-save
-          docker save $(docker images -q) --output /tmp/docker-save/snapshot.tar
+          docker save $(docker images -q) --output ${{ env.DOCKER_CACHE_DIR }}/${{ env.DOCKER_CACHE_FILE }}
 
       - name: Enable rust cargo cache
         uses: actions/cache@v2
