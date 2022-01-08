@@ -37,8 +37,7 @@ RUN yum check-update -y \
     && yum clean all
 
 RUN cargo install cargo-rpm \
-    && rm -rf $CARGO_HOME/registry \
-    && chown docker:docker -R $CARGO_HOME
+    && rm -rf $CARGO_HOME/registry
 
 WORKDIR "/workspaces"
 RUN chmod 755 /workspaces
