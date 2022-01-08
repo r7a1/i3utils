@@ -14,14 +14,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/docker-save
-          key: docker-save-${{ hashFiles('.github/actions/cargo/Dockerfile') }}
+          key: docker-save-${{ hashFiles('./.github/actions/cargo/Dockerfile') }}
 
       - name: Load docker cache if it exists
         run: docker load -i /tmp/docker-save/snapshot.tar || true
         if: steps.docker-cache.outputs.cache-hit == 'true'
 
       - name: Build docker file
-        uses: .github/actions/cargo
+        uses: ./.github/actions/cargo
         with:
           args: -h
 
@@ -39,12 +39,12 @@ jobs:
           key: cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Build and Test
-        uses: .github/actions/cargo
+        uses: ./.github/actions/cargo
         with:
           args: test
 
       - name: Build RPM Package
-        uses: .github/actions/cargo
+        uses: ./.github/actions/cargo
         with:
           args: rpm build
 
