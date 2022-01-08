@@ -23,7 +23,7 @@ jobs:
       - name: Build docker file
         uses: ./.github/actions/cargo
         with:
-          args: -h
+          args: --version
 
       - name: Save docker cache
         run: |
