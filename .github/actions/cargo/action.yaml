@@ -1,0 +1,13 @@
+---
+name: CentOS
+description: Build rust on CentOS
+inputs:
+  args:
+    description: Arguments for cargo
+    required: true
+outputs: {}
+runs:
+  using: docker
+  image: Dockerfile
+  entrypoint: entrypoint.sh
+  args: ${{ inputs.args }}
