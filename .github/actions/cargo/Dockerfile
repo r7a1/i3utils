@@ -42,4 +42,6 @@ RUN cargo install cargo-rpm \
 WORKDIR "/workspaces"
 RUN chmod 755 /workspaces
 
-ENTRYPOINT ["/opt/rust/bin/cargo"]
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
