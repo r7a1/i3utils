@@ -14,7 +14,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/docker-save
-          key: docker-save-${{ hashFiles('./.github/actions/cargo/Dockerfile') }}
+          key: docker-save-${{ hashFiles('.github/actions/cargo/Dockerfile') }}
 
       - name: Load docker cache if it exists
         run: docker load -i /tmp/docker-save/snapshot.tar || true
