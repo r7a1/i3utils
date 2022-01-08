@@ -41,3 +41,5 @@ RUN cargo install cargo-rpm \
 
 WORKDIR "/workspaces"
 RUN chmod 755 /workspaces
+
+ENTRYPOINT ["/opt/rust/bin/cargo"]
