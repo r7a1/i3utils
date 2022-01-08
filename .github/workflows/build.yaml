@@ -28,7 +28,7 @@ jobs:
       - name: Save docker cache
         run: |
           mkdir -p /tmp/docker-save
-          docker save $(docker images -q) --output /tmp/docker-save/docker-save-${{ hashFiles('./.github/actions/cargo/Dockerfile') }}.tar
+          docker save $(docker images -q) --output /tmp/docker-save/snapshot.tar
 
       - name: Enable rust cargo cache
         uses: actions/cache@v2
