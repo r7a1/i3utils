@@ -21,7 +21,7 @@ jobs:
 
       - name: Load docker cache if it exists
         if: steps.docker-cache.outputs.cache-hit == 'true'
-        run: docker load -i ${{ env.DOCKER_CACHE_DIR }}/${{ env.DOCKER_CACHE_FILE }} || true
+        run: docker load --input ${{ env.DOCKER_CACHE_DIR }}/${{ env.DOCKER_CACHE_FILE }} || true
 
       - name: Build docker file
         uses: ./.github/actions/cargo
@@ -30,7 +30,7 @@ jobs:
 
       - name: Save docker cache
         run: |
-          mkdir -p /tmp/docker-save
+          mkdir -p ${{ env.DOCKER_CACHE_DIR }}
           docker save $(docker images -q) --output ${{ env.DOCKER_CACHE_DIR }}/${{ env.DOCKER_CACHE_FILE }}
 
       - name: Enable rust cargo cache
