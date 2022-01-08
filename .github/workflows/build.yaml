@@ -6,14 +6,18 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/actions/cargo
+      - name: Checkout Source
+        uses: actions/checkout@v2
+      - name: Build and Test
+        uses: ./.github/actions/cargo
         with:
           args: test
-      - uses: ./.github/actions/cargo
+      - name: Make RPM Package
+        uses: ./.github/actions/cargo
         with:
-          args: rpm
-      - uses: actions/upload-artifact@v2
+          args: rpm build
+      - name: Upload RPM Package
+        uses: actions/upload-artifact@v2
         with:
           name: i3utils.rpm
           path: target/release/rpmbuild/RPMs/x86_64/*.rpm
