@@ -2,8 +2,8 @@
 %define __os_install_post %{_dbpath}/brp-compress
 %define debug_package %{nil}
 
-Name: tools
-Summary: tools
+Name: i3utils
+Summary: i3 desktop utilities
 Version: @@VERSION@@
 Release: @@RELEASE@@%{?dist}
 License: MIT

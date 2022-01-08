@@ -9,4 +9,11 @@ jobs:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/cargo
         with:
-          args: build --release
+          args: test
+      - uses: ./.github/actions/cargo
+        with:
+          args: rpm
+      - uses: actions/upload-artifact@v2
+        with:
+          name: i3utils.rpm
+          path: target/release/rpmbuild/RPMs/x86_64/*.rpm
