@@ -1,0 +1,13 @@
+---
+name: CentOS
+description: Build rust on CentOS
+inputs:
+  run:
+    description: 'Script to run'
+    required: true
+outputs: {}
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.run }}

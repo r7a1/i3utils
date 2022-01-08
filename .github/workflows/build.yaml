@@ -1,0 +1,13 @@
+---
+name: Build
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: [linux, x64]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./.github/actions/rust-centos
+        with:
+          run: |
+            cargo build
