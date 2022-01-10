@@ -145,7 +145,7 @@ runs:
             -v "$RUNNER_TEMP/_github_home":"/github/home" \
             -v "$RUNNER_TEMP/_github_workflow":"/github/workflow" \
             -v "$RUNNER_TEMP/_runner_file_commands":"/github/file_commands" \
-            -v "$RUNNER_WORKSPACE":"/github/workspace" \
+            -v "$GITHUB_WORKSPACE":"/github/workspace" \
             \
             -w /github/workspace \
             \
