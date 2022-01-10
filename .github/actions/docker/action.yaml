@@ -27,6 +27,7 @@ runs:
       with:
         builder: ${{ steps.buildx.outputs.name }}
         context: ${{ inputs.context }}
+        tags: cargo
         load: true
         push: false
         cache-from: type=local,src=/tmp/buildx-cache
@@ -87,5 +88,5 @@ runs:
             \
             -w /github/workspace \
             \
-            ${{ steps.docker_build.outputs.digest }} ${{ inputs.args }}
+            cargo ${{ inputs.args }}
       shell: bash
