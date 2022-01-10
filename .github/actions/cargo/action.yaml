@@ -5,6 +5,10 @@ inputs:
   args:
     description: Arguments for cargo
     required: true
+  docker-opts:
+    required: false
+    default: ''
+    type: string
 outputs: {}
 runs:
   using: composite
@@ -23,3 +27,4 @@ runs:
       with:
         context: ./.github/actions/cargo
         args: ${{ inputs.args }}
+        docker-opts: ${{ inputs.docker-opts }}

@@ -92,7 +92,7 @@ runs:
             \
             -w /github/workspace \
             \
-            ${{ inputs.docker-opts }}
+            ${{ inputs.docker-opts }} \
             \
             cargo ${{ inputs.args }}
       shell: bash
