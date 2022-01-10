@@ -9,12 +9,15 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v2
 
+      - run: mkdir -p /tmp/rust-cache/registry /tmp/rust-cache/sccache
+        shell: bash
+
       - name: Enable rust cargo cache
         uses: actions/cache@v2
         with:
           path: |
-            /opt/rust/registry
-            /opt/rust/sccache
+            /tmp/rust-cache/registry
+            /tmp/rust-cache/sccache
             target
           key: cargo-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
@@ -24,11 +27,13 @@ jobs:
         uses: ./.github/actions/cargo
         with:
           args: test
+          docker_opts: -v /tmp/rust-cache/registry:/opt/rust/registry -v /tmp/rust-cache/sccache:/opt/rust/sccache
 
       - name: Build RPM Package
         uses: ./.github/actions/cargo
         with:
           args: rpm build
+          docker_opts: -v /tmp/rust-cache/registry:/opt/rust/registry -v /tmp/rust-cache/sccache:/opt/rust/sccache
 
       - name: Upload RPM Package
         uses: actions/upload-artifact@v2

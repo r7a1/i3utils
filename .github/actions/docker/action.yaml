@@ -7,6 +7,10 @@ inputs:
   args:
     required: true
     type: string
+  docker_opts:
+    required: false
+    default: ''
+    type: string
 runs:
   using: composite
   steps:
@@ -87,6 +91,8 @@ runs:
             -v "$GITHUB_WORKSPACE":"/github/workspace" \
             \
             -w /github/workspace \
+            \
+            ${{ docker_opts }}
             \
             cargo ${{ inputs.args }}
       shell: bash
