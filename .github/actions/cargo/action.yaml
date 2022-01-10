@@ -9,6 +9,16 @@ outputs: {}
 runs:
   using: composite
   steps:
+    - name: Enable cache
+      id: buildx-cache
+      uses: actions/cache@v2
+      with:
+        path: /tmp/buildx-cache
+        key: ${{ format('cargo-image-{0}', hashFiles('./.github/actions/cargo/Dockerfile')) }}
+        restore-keys: |
+          ${{ format('cargo-image-{0}', hashFiles('./.github/actions/cargo/Dockerfile')) }}
+          cargo-image-
+
     - uses: ./.github/actions/docker
       with:
         context: ./.github/actions/cargo
