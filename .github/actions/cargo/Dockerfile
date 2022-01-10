@@ -28,7 +28,7 @@ RUN yum check-update -y \
 
 ENV SCCACHE_DIR $CARGO_HOME/sccache
 RUN curl -sSfL https://github.com/mozilla/sccache/releases/download/$SCCACHE_VERSION/sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl.tar.gz \
-    | tar xzvf - --strip-components 1 -C /opt/rust/bin/ sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl/sccache
+    | tar xzvf - --strip-components 1 -C /opt/rust/bin/ sccache-$SCCACHE_VERSION-x86_64-unknown-linux-musl/sccache \
     && echo -e "[build]\nrustc-wrapper = \"$CARGO_HOME/bin/sccache\"" > $CARGO_HOME/config
 
 RUN yum check-update -y \
