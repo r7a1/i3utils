@@ -9,7 +9,7 @@ outputs: {}
 runs:
   using: composite
   steps:
-    - uses: ./.github/actions/docker@master
+    - uses: r7a1/i3utils/.github/actions/docker@master
       with:
         file: ./Dockerfile
         args: ${{ inputs.args }}
