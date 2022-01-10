@@ -27,13 +27,13 @@ jobs:
         uses: ./.github/actions/cargo
         with:
           args: test
-          docker_opts: -v /tmp/rust-cache/registry:/opt/rust/registry -v /tmp/rust-cache/sccache:/opt/rust/sccache
+          docker-opts: -v /tmp/rust-cache/registry:/opt/rust/registry -v /tmp/rust-cache/sccache:/opt/rust/sccache
 
       - name: Build RPM Package
         uses: ./.github/actions/cargo
         with:
           args: rpm build
-          docker_opts: -v /tmp/rust-cache/registry:/opt/rust/registry -v /tmp/rust-cache/sccache:/opt/rust/sccache
+          docker-opts: -v /tmp/rust-cache/registry:/opt/rust/registry -v /tmp/rust-cache/sccache:/opt/rust/sccache
 
       - name: Upload RPM Package
         uses: actions/upload-artifact@v2
