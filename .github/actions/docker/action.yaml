@@ -7,7 +7,7 @@ inputs:
   args:
     required: true
     type: string
-  docker_opts:
+  docker-opts:
     required: false
     default: ''
     type: string
@@ -92,7 +92,7 @@ runs:
             \
             -w /github/workspace \
             \
-            ${{ docker_opts }}
+            ${{ inputs.docker-opts }}
             \
             cargo ${{ inputs.args }}
       shell: bash
