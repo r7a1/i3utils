@@ -1,13 +1,15 @@
 ---
-name: CentOS
-description: Build rust on CentOS
+name: Cargo
+description: Rust | Run cargo
 inputs:
   args:
     description: Arguments for cargo
     required: true
 outputs: {}
 runs:
-  using: docker
-  image: Dockerfile
-  args:
-    - ${{ inputs.args }}
+  using: composite
+  steps:
+    - uses: ./github/actions/docker@master
+      with:
+        file: ./Dockerfile
+        args: ${{ inputs.args }}
