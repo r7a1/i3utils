@@ -12,16 +12,6 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v2
 
-      - name: Enable cache
-        id: buildx-cache
-        uses: actions/cache@v2
-        with:
-          path: /tmp/buildx-cache
-          key: ${{ format('cargo-{0}', hashFiles('./.github/actions/cargo/Dockerfile')) }}
-          restore-keys: |
-            ${{ format('cargo-{0}', hashFiles('./.github/actions/cargo/Dockerfile')) }}
-            cargo-
-
       - name: Enable rust cargo cache
         uses: actions/cache@v2
         with:
@@ -29,7 +19,9 @@ jobs:
             /opt/rust/registry
             /opt/rust/sccache
             target
-          key: cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: cargo-${{ github.ref }}-${{ github.sha }}
+          restore-key: |
+            cargo-${{ github.ref }}-
 
       - name: Build and Test
         uses: ./.github/actions/cargo
