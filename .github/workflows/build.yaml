@@ -12,32 +12,43 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v2
 
-      - name: Enable docker cache
-        id: docker-cache
+      - name: Enable cache
+        id: buildx-cache
         uses: actions/cache@v2
         with:
-          path: ${{ env.DOCKER_CACHE_DIR }}
-          key: ${{ hashFiles('./.github/actions/cargo/Dockerfile') }}
+          path: /tmp/buildx-cache
+          key: ${{ format('cargo-{0}', hashFiles('./.github/actions/cargo/Dockerfile')) }}
+          restore-keys: |
+            ${{ format('cargo-{0}', hashFiles('./.github/actions/cargo/Dockerfile')) }}
+            cargo-
 
-      - name: Load docker cache if it exists
-        if: steps.docker-cache.outputs.cache-hit == 'true'
-        run: docker load --input ${{ env.DOCKER_CACHE_DIR }}/${{ env.DOCKER_CACHE_FILE }} || true
+      - name: Ensure docker context exists
+        run: docker context create buildx || docker context use buildx
+        shell: bash
 
-      - name: Build docker file
-        uses: ./.github/actions/cargo
+      - name: Setup buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v1
         with:
-          args: --version
+          version: v0.7.0
+          endpoint: buildx
 
-      - name: Save docker cache
-        run: |
-          mkdir -p ${{ env.DOCKER_CACHE_DIR }}
-          docker save $(docker images -q) --output ${{ env.DOCKER_CACHE_DIR }}/${{ env.DOCKER_CACHE_FILE }}
+      - name: Build dockerfile
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: ./.github/actions/cargo/Dockerfile
+          push: false
+          cache-from: type=local,src=/tmp/buildx-cache
+          cache-to: type=local,dest=/tmp/buildx-cache
 
       - name: Enable rust cargo cache
         uses: actions/cache@v2
         with:
           path: |
             /opt/rust/registry
+            /opt/rust/sccache
             target
           key: cargo-${{ hashFiles('**/Cargo.lock') }}
 
