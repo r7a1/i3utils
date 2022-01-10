@@ -35,6 +35,7 @@ runs:
 
     - name: Run
       run: |
+        cat $GITHUB_ENV
         docker run --rm \
             \
             -e DOCKER_CACHE_DIR \
