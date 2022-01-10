@@ -17,7 +17,7 @@ jobs:
             /opt/rust/sccache
             target
           key: cargo-${{ github.ref }}-${{ github.sha }}
-          restore-key: |
+          restore-keys: |
             cargo-${{ github.ref }}-
 
       - name: Build and Test
