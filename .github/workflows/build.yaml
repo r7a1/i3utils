@@ -2,9 +2,6 @@
 name: Build
 on:
   workflow_dispatch:
-env:
-  DOCKER_CACHE_DIR: /tmp/docker-cache
-  DOCKER_CACHE_FILE: snapshot.tar
 jobs:
   build:
     runs-on: ubuntu-20.04
