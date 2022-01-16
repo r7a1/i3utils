@@ -2,14 +2,12 @@ use anyhow::Result;
 use directories::ProjectDirs;
 use lazy_static::lazy_static;
 use log::info;
+use std::convert::{TryFrom, TryInto};
+use std::fs;
 use std::fs::File;
 use std::io::{prelude::*, BufReader, Write};
 use std::ops::Index;
 use std::path::Path;
-use std::{
-    convert::{TryFrom, TryInto},
-    fs,
-};
 
 use crate::sys::xwindow;
 
