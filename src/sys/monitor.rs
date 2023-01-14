@@ -1,6 +1,7 @@
+use std::{io, string::ToString};
+
 use anyhow::{Error, Result};
-use lazy_static::lazy_static;
-use regex::Regex;
+use lazy_regex::{regex_captures, regex_is_match};
 
 pub fn apply(brightness: Option<f32>, gamma: Option<String>) -> Result<()> {
     let mut cmd = std::process::Command::new("xrandr");
@@ -30,25 +31,22 @@ impl std::str::FromStr for Gamma {
     type Err = Error;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        lazy_static! {
-            static ref PAT: Regex =
-                Regex::new(r"(?P<r>\d+(\.\d+)?):(?P<g>\d+(\.\d+)?):(?P<b>\d+(\.\d+)?)")
-                    .expect("failed to compile regex");
-        }
-
-        if let Some(c) = PAT.captures(s) {
+        if let Some((_, r, _, g, _, b, _)) = regex_captures!(
+            r"(?P<r>\d+(\.\d+)?):(?P<g>\d+(\.\d+)?):(?P<b>\d+(\.\d+)?)",
+            s
+        ) {
             Ok(Gamma {
-                r: 1.0 / c["r"].parse::<f32>()?,
-                g: 1.0 / c["g"].parse::<f32>()?,
-                b: 1.0 / c["b"].parse::<f32>()?,
+                r: 1.0 / r.parse::<f32>()?,
+                g: 1.0 / g.parse::<f32>()?,
+                b: 1.0 / b.parse::<f32>()?,
             })
         } else {
-            Err(std::io::Error::from(std::io::ErrorKind::NotFound).into())
+            Err(io::Error::from(io::ErrorKind::NotFound).into())
         }
     }
 }
 
-impl std::string::ToString for Gamma {
+impl ToString for Gamma {
     fn to_string(&self) -> String {
         format!(
             "{r:1.1}:{g:1.1}:{b:1.1}",
@@ -60,45 +58,31 @@ impl std::string::ToString for Gamma {
 }
 
 pub fn get_primary_monitor() -> Option<String> {
-    lazy_static! {
-        static ref PAT: Regex =
-            Regex::new(r"^(?P<monitor>.*) connected .*\+0\+0 .*").expect("failed to compile regex");
-    }
-
     duct::cmd!("xrandr")
         .read()
         .unwrap_or_default()
         .lines()
-        .find_map(|line| PAT.captures(line))
-        .map(|cap| cap[1].to_string())
+        .find_map(|line| regex_captures!(r"^(?P<monitor>.*) connected .*\+0\+0 .*", line))
+        .map(|(_, monitor)| monitor.to_string())
 }
 
 pub fn get_brightness() -> Result<f32> {
-    lazy_static! {
-        static ref PAT: Regex =
-            Regex::new(r"Brightness: +(?P<num>.*)").expect("failed to compile regex");
-    }
-
     duct::cmd!("xrandr", "--verbose")
         .read()?
         .lines()
-        .find_map(|line| PAT.captures(line))
-        .map(|cap| cap["num"].to_string())
-        .ok_or(std::io::Error::from(std::io::ErrorKind::NotFound))?
+        .find_map(|line| regex_captures!(r"Brightness: +(?P<num>.*)", line))
+        .map(|(_, num)| num.to_string())
+        .ok_or(io::Error::from(io::ErrorKind::NotFound))?
         .parse::<f32>()
         .map_err(|e| e.into())
 }
 
 pub fn get_gamma() -> Result<Gamma> {
-    lazy_static! {
-        static ref PAT: Regex = Regex::new(r"Gamma: *.*").expect("failed to compile regex");
-    }
-
     duct::cmd!("xrandr", "--verbose")
         .read()?
         .lines()
-        .filter(|line| PAT.is_match(line))
+        .filter(|line| regex_is_match!(r"Gamma: *.*", line))
         .map(|line| line.parse::<Gamma>().map_err(|e| e.into()))
         .next()
-        .ok_or(std::io::Error::from(std::io::ErrorKind::NotFound))?
+        .ok_or(io::Error::from(io::ErrorKind::NotFound))?
 }

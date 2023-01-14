@@ -1,5 +1,5 @@
 use anyhow::Result;
-use lazy_regex::regex;
+use lazy_regex::regex_captures;
 use log::{debug, info};
 
 #[derive(Debug)]
@@ -36,14 +36,9 @@ fn list_sinks() -> Result<Vec<Sink>> {
         .lines()
         .inspect(|line| debug!("sinks: {line}"))
         .filter_map(|line| {
-            regex!(r"^(?P<index>[0-9]+)\s+(?P<name>.+)\s+PipeWire\s+.*").captures(line)
+            regex_captures!(r"^(?P<index>[0-9]+)\s+(?P<name>.+)\s+PipeWire\s+.*", line)
         })
-        .map(|cap| {
-            Ok(Sink(
-                cap["index"].parse::<u16>()?.to_owned(),
-                cap["name"].to_string(),
-            ))
-        })
+        .map(|(_, index, name)| Ok(Sink(index.parse::<Index>()?.to_owned(), name.to_string())))
         .collect::<Result<Vec<Sink>>>()
 }
 
@@ -52,27 +47,26 @@ fn default_sink() -> Result<String> {
         .read()?
         .lines()
         .inspect(|line| debug!("inputs: {}", line))
-        .filter_map(|line| regex!(r"Default Sink: +(?P<name>.+)").captures(line))
-        .map(|cap| cap["name"].to_string())
+        .filter_map(|line| regex_captures!(r"Default Sink: +(?P<name>.+)", line))
+        .map(|(_, name)| name.to_string())
         .next()
         .ok_or_else(|| anyhow::format_err!("no default sink found."))
 }
 
-fn list_inputs() -> Result<Vec<u16>> {
-    Ok(duct::cmd!("pactl", "list", "short", "sink-inputs")
+fn list_inputs() -> Result<Vec<Index>> {
+    let inputs = duct::cmd!("pactl", "list", "short", "sink-inputs")
         .read()?
         .lines()
-        .filter_map(|line| regex!(r"(?P<index>[0-9]+) +.*").captures(line))
-        .filter_map(|cap| cap["index"].parse::<u16>().ok())
-        .collect::<Vec<u16>>())
+        .filter_map(|line| regex_captures!(r"(?P<index>[0-9]+) +.*", line))
+        .filter_map(|(_, index)| index.parse::<Index>().ok())
+        .collect::<Vec<Index>>();
+    Ok(inputs)
 }
 
-fn switch_next(sinks: Vec<Sink>, current: &str, inputs: Vec<u16>) -> Result<()> {
-    if let Some((idx, _)) = sinks
-        .iter()
-        .enumerate()
-        .find(|(_, sink)| sink.1 == current)
-    {
+fn switch_next(sinks: Vec<Sink>, current: &str, inputs: Vec<Index>) -> Result<()> {
+    let sink = sinks.iter().enumerate().find(|(_, sink)| sink.1 == current);
+
+    if let Some((idx, _)) = sink {
         let Sink(id, next) = &sinks[(idx + 1) % sinks.len()];
         info!("switching sink: {id}: {next}");
 
