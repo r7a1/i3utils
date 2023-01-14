@@ -11,10 +11,15 @@ struct Opts {
 
 #[derive(Parser)]
 enum SubCommand {
+    /// Reset to default display parameters.
     Reset,
+    /// Brighten up.
     Up,
+    /// Dim down.
     Down,
+    /// Set dark display parameters.
     Dark,
+    /// Set darkest display parameters.
     Darkest,
 }
 

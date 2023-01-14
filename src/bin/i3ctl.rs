@@ -11,9 +11,13 @@ struct Opts {
 
 #[derive(Parser)]
 enum SubCommand {
+    /// Clean up cache.
     Clean,
+    /// Toggle fullscreen.
     ToggleFullscreen,
+    /// Focus matched window.
     FocusNextmatch { name: String },
+    /// Focus the window if it exists, run command otherwise.
     RunOrRaise { cmd: String, class: String },
 }
 
