@@ -2,31 +2,36 @@ use anyhow::Result;
 use lazy_regex::regex_captures;
 use log::{debug, info};
 
-#[derive(Debug)]
-struct Sink(u16, String);
+type Index = u32;
 
-pub fn volume_up(inc: Option<i8>) -> Result<()> {
-    volume(inc.unwrap_or(5))
+#[derive(Debug)]
+struct Sink(Index, String);
+
+pub fn volume_up(inc: Option<u8>) -> Result<()> {
+    let inc = inc.unwrap_or(5);
+    set_volume(&format!("+{inc}%"))
 }
 
-pub fn volume_down(dec: Option<i8>) -> Result<()> {
-    volume(-dec.unwrap_or(5))
+pub fn volume_down(dec: Option<u8>) -> Result<()> {
+    let dec = dec.unwrap_or(5);
+    set_volume(&format!("-{dec}%"))
 }
 
 pub fn switch_sink_next() -> Result<()> {
     let current = default_sink()?;
-    switch_next(list_sinks()?, &current, list_inputs()?)
+    let sinks = list_sinks()?;
+    let inputs = list_inputs()?;
+
+    switch_next(sinks, &current, inputs)
 }
 
-fn volume(percent: i8) -> Result<()> {
+// Implementation
+
+fn set_volume(param: &str) -> Result<()> {
     let sink = default_sink()?;
-    let param = if percent > 0 {
-        format!("+{}%", percent)
-    } else {
-        format!("-{}%", -percent)
-    };
+
     debug!("volume control: {}", &param);
-    duct::cmd!("pactl", "set-sink-volume", sink, &param).run()?;
+    duct::cmd!("pactl", "set-sink-volume", sink, param).run()?;
     Ok(())
 }
 

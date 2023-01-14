@@ -1,4 +1,3 @@
-use std::io::Read;
 use anyhow::Result;
 use clap::Parser;
 
