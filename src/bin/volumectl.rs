@@ -12,8 +12,11 @@ struct Opts {
 
 #[derive(Parser)]
 enum SubCommand {
+    /// Volume up.
     Up,
+    /// Volume down.
     Down,
+    /// Switch to next sink.
     Switch,
 }
 
@@ -23,7 +26,7 @@ fn main() -> Result<()> {
     match Opts::parse().cmd {
         SubCommand::Up => sys::audio::volume_up(None)?,
         SubCommand::Down => sys::audio::volume_down(None)?,
-        SubCommand::Switch => sys::audio::switch_sink_next()?,
+        SubCommand::Switch => sys::audio::switch_to_next_sink()?,
     }
     Ok(())
 }
