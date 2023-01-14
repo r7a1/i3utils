@@ -25,12 +25,12 @@ impl Core {
 
     // All i3 nodes have `con_id`
     pub fn focus(&mut self, id: i64) -> Result<()> {
-        self.run(&format!(r#"[con_id="{}"] focus"#, id))?;
+        self.run(&format!(r#"[con_id="{id}"] focus"#))?;
         Ok(())
     }
 
     pub fn focus_window(&mut self, id: i32) -> Result<()> {
-        self.run(&format!(r#"[id="{}"] focus"#, id))?;
+        self.run(&format!(r#"[id="{id}"] focus"#))?;
         Ok(())
     }
 

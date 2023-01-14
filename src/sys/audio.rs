@@ -34,7 +34,7 @@ fn list_sinks() -> Result<Vec<Sink>> {
     duct::cmd!("pactl", "list", "short", "sinks")
         .read()?
         .lines()
-        .inspect(|line| debug!("sinks: {}", line))
+        .inspect(|line| debug!("sinks: {line}"))
         .filter_map(|line| {
             regex!(r"^(?P<index>[0-9]+)\s+(?P<name>.+)\s+PipeWire\s+.*").captures(line)
         })
@@ -74,7 +74,7 @@ fn switch_next(sinks: Vec<Sink>, current: &str, inputs: Vec<u16>) -> Result<()> 
         .find(|(_, sink)| sink.1 == current)
     {
         let Sink(id, next) = &sinks[(idx + 1) % sinks.len()];
-        info!("switch to sink: {}: {}", id, next);
+        info!("switching sink: {id}: {next}");
 
         duct::cmd!("pactl", "set-default-sink", next).run()?;
         for input in &inputs {

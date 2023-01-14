@@ -86,7 +86,7 @@ impl Util {
         // If matched windows found, focus next. Run command otherwise.
 
         if search_windows(&tree, &pat)?.next().is_none() {
-            info!("run command: {}", cmd);
+            info!("run command: {cmd}");
             // Deamonize process to run command in background.
             duct::cmd!("daemonize", cmd).run()?;
         } else {
@@ -229,7 +229,7 @@ impl Util {
                 let mut swallows = json::JsonValue::new_object();
                 for key in &["class", "instance"] {
                     if let Some(val) = node.index("window_properties").index(*key).as_str() {
-                        swallows.insert(key, format!("^{}$", val))?;
+                        swallows.insert(key, format!("^{val}$"))?;
                     }
                 }
                 container.insert("swallows", swallows)?;

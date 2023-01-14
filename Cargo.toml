@@ -24,7 +24,6 @@ lazy_static = "*"
 log = '*'
 regex = "*"
 lazy-regex = "*"
-fstrings = "*"
 ## displayctl
 xcb = "*"
 ## volumectl.rs
