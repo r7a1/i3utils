@@ -1,43 +1,61 @@
 use anyhow::Result;
+use xcb::{x, XidNew};
 
 pub struct Connection(xcb::Connection);
 
 impl Connection {
     pub fn new() -> Result<Self> {
-        Ok(Connection(xcb::Connection::connect(None)?.0))
+        let (conn, _) = xcb::Connection::connect(None)?;
+        Ok(Connection(conn))
     }
 
     pub fn map(&self, window: u32) -> Result<()> {
-        Ok(xcb::xproto::map_window(&self.0, window).request_check()?)
+        let cookie = self.0.send_request_checked(&x::MapWindow {
+            window: unsafe { x::Window::new(window) },
+        });
+        Ok(self.0.check_request(cookie)?)
     }
 
     pub fn unmap(&self, window: u32) -> Result<()> {
-        Ok(xcb::xproto::unmap_window(&self.0, window).request_check()?)
+        let cookie = self.0.send_request_checked(&x::UnmapWindow {
+            window: unsafe { x::Window::new(window) },
+        });
+        Ok(self.0.check_request(cookie)?)
     }
 
     pub fn destroy(&self, window: u32) -> Result<()> {
-        Ok(xcb::xproto::destroy_window(&self.0, window).request_check()?)
+        let cookie = self.0.send_request_checked(&x::DestroyWindow {
+            window: unsafe { x::Window::new(window) },
+        });
+        Ok(self.0.check_request(cookie)?)
     }
 
-    pub fn flush(&self) {
-        self.0.flush();
+    pub fn flush(&self) -> Result<()> {
+        Ok(self.0.flush()?)
     }
 
     pub fn get_pid(&self, window: u32) -> Option<u32> {
-        self.intern_atom("_NET_WM_PID").and_then(|atom| {
-            match xcb::xproto::get_property(&self.0, false, window, atom, xcb::ATOM_CARDINAL, 0, 4)
-                .get_reply()
-            {
+        self.intern_atom(b"_NET_WM_PID").and_then(|atom| {
+            let cookie = self.0.send_request(&x::GetProperty {
+                delete: false,
+                window: unsafe { x::Window::new(window) },
+                property: atom,
+                r#type: x::ATOM_CARDINAL,
+                long_offset: 0,
+                long_length: 4,
+            });
+            match self.0.wait_for_reply(cookie) {
                 Ok(r) => Some(r.value()[0]),
                 Err(_) => None,
             }
         })
     }
 
-    fn intern_atom(&self, name: &str) -> Option<xcb::Atom> {
-        xcb::xproto::intern_atom(&self.0, true, name)
-            .get_reply()
-            .ok()
-            .map(|r| r.atom())
+    fn intern_atom(&self, name: &[u8]) -> Option<x::Atom> {
+        let cookie = self.0.send_request(&x::InternAtom {
+            only_if_exists: false,
+            name,
+        });
+        self.0.wait_for_reply(cookie).ok().map(|r| r.atom())
     }
 }

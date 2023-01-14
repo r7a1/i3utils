@@ -139,7 +139,7 @@ impl Util {
                 xconn.destroy(*id)?;
             }
         }
-        xconn.flush();
+        xconn.flush()?;
 
         self.0.run(&format!("append_layout {}", &*LAYOUT_FILE))?;
 
@@ -148,7 +148,7 @@ impl Util {
         for w in windows.iter().rev() {
             xconn.map(*w)?;
         }
-        xconn.flush();
+        xconn.flush()?;
 
         Ok(())
     }
