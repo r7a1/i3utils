@@ -25,7 +25,7 @@ fn main() -> Result<()> {
         SubCommand::Up => (Some(sys::monitor::get_brightness()? + 0.05), None),
         SubCommand::Down => (Some(sys::monitor::get_brightness()? - 0.05), None),
         SubCommand::Dark => (Some(1.0), Some("1.0:0.6:0.3".to_owned())),
-        SubCommand::Darkest => (Some(0.2), Some("0.5:0.2:0.1".to_owned())),
+        SubCommand::Darkest => (Some(0.1), Some("0.5:0.2:0.1".to_owned())),
     };
 
     // Provide brightness limits.
